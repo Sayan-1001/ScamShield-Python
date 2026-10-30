@@ -57,9 +57,9 @@ def analyze_single_url(url: str) -> dict:
         if brand in domain and domain != brand:
             risk_points += 40
             warning_signs.append(
-                f"Brand Typosquatting / Spoofing: '{full_registered_domain}' incorporates the brand name '{brand.upper()}' without authorization."
+                f"Brand Typosquatting / Spoofing: Domain '{full_registered_domain}' unlawfully incorporates brand '{brand.upper()}'."
             )
-        # Brand in subdomain
+        # Brand placed inside subdomain
         elif brand in subdomain and brand != domain:
             risk_points += 40
             warning_signs.append(
@@ -82,3 +82,13 @@ def analyze_single_url(url: str) -> dict:
         "risk_points": min(risk_points, 100),
         "warning_signs": warning_signs
     }
+import urllib.request
+
+def resolve_final_url(url: str) -> str:
+    """Follows HTTP redirects to uncover hidden final destinations."""
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=2) as response:
+            return response.geturl()  # Returns the actual landing page URL
+    except Exception:
+        return url
