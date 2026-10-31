@@ -1,6 +1,6 @@
 """
 ScamShield India — AI-Powered Fraud & Phishing Defense Platform
-Theme: Cyber-Mesh Electric Blue HUD
+Theme: Original Cyber-Navy & Electric Cyan with Scroll-Driven Reveal Animations
 """
 
 import os
@@ -27,7 +27,7 @@ st.set_page_config(
 )
 
 # ==============================================================================
-# CYBER-HUD ELECTRIC BLUE STYLING
+# ORIGINAL CYBER-NAVY THEME & SCROLL-REVEAL ANIMATIONS
 # ==============================================================================
 st.markdown("""
 <style>
@@ -46,22 +46,44 @@ st.markdown("""
         max-width: 94% !important;
     }
 
-    /* 2. Cyber-Blue Canvas Background */
+    /* 2. Original Deep Midnight Navy Canvas */
     .stApp {
-        background-color: #020b18 !important;
+        background-color: #090F19 !important;
         background-image: 
-            radial-gradient(circle at 50% 8%, rgba(0, 212, 255, 0.22) 0%, transparent 60%),
-            radial-gradient(circle at 10% 80%, rgba(0, 102, 255, 0.16) 0%, transparent 50%),
-            radial-gradient(circle at 90% 90%, rgba(3, 105, 161, 0.16) 0%, transparent 50%),
-            linear-gradient(180deg, #020b18 0%, #03152d 100%) !important;
+            radial-gradient(at 15% 15%, rgba(30, 58, 138, 0.28) 0px, transparent 55%),
+            radial-gradient(at 85% 85%, rgba(14, 116, 144, 0.22) 0px, transparent 55%),
+            linear-gradient(180deg, #070d1e 0%, #03152d 100%) !important;
+        background-attachment: fixed !important;
         color: #e0f2fe !important;
         font-family: 'Inter', sans-serif;
     }
 
-    /* 3. Cyber HUD Banner */
+    /* 3. SCROLL-DRIVEN REVEAL ANIMATION (Smoothly Arises as you Scroll Down) */
+    @keyframes scrollArise {
+        0% {
+            opacity: 0;
+            transform: translateY(55px) scale(0.97);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* Apply scroll-timeline reveal to cards, stats, and database logs */
+    @supports (animation-timeline: view()) {
+        .cyber-card, .stat-pill, div[data-testid="stExpander"], .emergency-hud {
+            animation: scrollArise linear both;
+            animation-timeline: view();
+            animation-range: entry 5% cover 32%;
+        }
+    }
+
+    /* 4. Cyber HUD Banner */
     .hud-banner {
         border: 1px solid rgba(0, 229, 255, 0.35);
-        background: rgba(3, 22, 49, 0.7);
+        background: rgba(12, 22, 45, 0.75);
+        backdrop-filter: blur(8px);
         box-shadow: 0 0 35px rgba(0, 212, 255, 0.15), inset 0 0 25px rgba(0, 212, 255, 0.05);
         border-radius: 12px;
         padding: 30px 20px;
@@ -75,7 +97,7 @@ st.markdown("""
         gap: 18px;
     }
     .hud-title {
-        font-family: 'Orbitron', sans-serif;
+        font-family: 'IBM Plex Sans', sans-serif;
         font-size: 3.2rem;
         font-weight: 900;
         letter-spacing: 5px;
@@ -86,13 +108,13 @@ st.markdown("""
     }
     .hud-title-india {
         color: #00f0ff;
-        font-family: 'Orbitron', sans-serif;
+        font-family: 'IBM Plex Sans', sans-serif;
         font-weight: 900;
         text-shadow: 0 0 20px #00f0ff;
         margin-left: 10px;
     }
 
-    /* Tagline with Updated Rajdhani Font */
+    /* Tagline */
     .hud-tagline-box {
         display: inline-block;
         border: 1px solid rgba(0, 229, 255, 0.6);
@@ -113,11 +135,11 @@ st.markdown("""
         text-shadow: 0 0 10px rgba(0, 229, 255, 0.7);
     }
 
-    /* 4. Streamlit Tabs */
+    /* 5. Streamlit Tabs */
     .stTabs [data-baseweb="tab-list"] {
         gap: 12px;
         background-color: transparent;
-        border-bottom: 1px solid #0c2a52;
+        border-bottom: 1px solid #263542;
         padding-bottom: 8px;
     }
     .stTabs [data-baseweb="tab"] {
@@ -126,8 +148,9 @@ st.markdown("""
         font-weight: 700;
         letter-spacing: 1px;
         color: #7dd3fc !important;
-        background: rgba(6, 30, 65, 0.55) !important;
-        border: 1px solid #0e3b73 !important;
+        background: rgba(12, 22, 45, 0.65) !important;
+        backdrop-filter: blur(6px);
+        border: 1px solid #1e2d54 !important;
         border-radius: 6px;
         padding: 10px 22px;
         transition: all 0.2s ease;
@@ -139,10 +162,10 @@ st.markdown("""
         box-shadow: 0 0 16px rgba(0, 240, 255, 0.4) !important;
     }
 
-    /* 5. Custom Segmented Bar Style (NO MCQ Radio Circles) */
+    /* 6. Custom Segmented Bar Style (NO MCQ Radio Circles) */
     div[data-testid="stSegmentedControl"] {
-        background: #04142b !important;
-        border: 1px solid #0e3b73 !important;
+        background: rgba(12, 22, 45, 0.75) !important;
+        border: 1px solid #1e2d54 !important;
         border-radius: 8px !important;
         padding: 5px !important;
     }
@@ -166,11 +189,11 @@ st.markdown("""
         box-shadow: 0 0 14px rgba(0, 229, 255, 0.35) !important;
     }
 
-    /* 6. Inputs & Text Areas */
+    /* 7. Inputs & Text Areas */
     .stTextArea textarea, .stTextInput input {
-        background-color: #04142b !important;
+        background-color: #0c162d !important;
         color: #f0f9ff !important;
-        border: 1px solid #0e3b73 !important;
+        border: 1px solid #1b2a4e !important;
         border-radius: 6px !important;
     }
     .stTextArea textarea:focus, .stTextInput input:focus {
@@ -178,7 +201,7 @@ st.markdown("""
         box-shadow: 0 0 10px rgba(0, 229, 255, 0.3) !important;
     }
 
-    /* 7. Action Buttons */
+    /* 8. Action Buttons */
     div.stButton > button[kind="primary"] {
         background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
         color: #020b18 !important;
@@ -192,23 +215,23 @@ st.markdown("""
         box-shadow: 0 0 20px rgba(0, 210, 255, 0.5) !important;
     }
 
-    /* 8. Cards */
+    /* 9. Cards */
     .cyber-card {
-        background: #04142b;
-        border: 1px solid #0e386e;
+        background: #101B28;
+        border: 1px solid #1b2a4e;
         border-radius: 10px;
         padding: 22px;
         margin-bottom: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
     .card-danger { border-left: 5px solid #ff3366 !important; }
-    .card-warning { border-left: 5px solid #ffbb00 !important; }
+    .card-warning { border-left: 5px solid #D6A34F !important; }
     .card-info { border-left: 5px solid #00e5ff !important; }
 
-    /* 9. Stat Pill */
+    /* 10. Stat Pill */
     .stat-pill {
-        background: #04142b;
-        border: 1px solid #0e386e;
+        background: #0c162d;
+        border: 1px solid #1b2a4e;
         border-radius: 8px;
         padding: 18px 20px;
         text-align: center;
@@ -231,41 +254,31 @@ st.markdown("""
 
 
 # ==============================================================================
-# HEADER: 3D SHIELD LOGO + SCAMSHIELD INDIA TITLE + NEW TAGLINE FONT
+# HEADER: 3D CYBER SHIELD LOGO + SCAMSHIELD INDIA
 # ==============================================================================
-# 3D Vector Shield SVG with metallic gradients and cyan depth glow
-SHIELD_3D_SVG = """
-<svg width="68" height="74" viewBox="0 0 68 74" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.6));">
-    <defs>
-        <linearGradient id="shieldRim" x1="0" y1="0" x2="68" y2="74" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#00f0ff"/>
-            <stop offset="50%" stop-color="#0066ff"/>
-            <stop offset="100%" stop-color="#001a4d"/>
-        </linearGradient>
-        <linearGradient id="shieldCore" x1="34" y1="6" x2="34" y2="66" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#08214d"/>
-            <stop offset="100%" stop-color="#020d20"/>
-        </linearGradient>
-        <linearGradient id="shieldEmblem" x1="20" y1="20" x2="48" y2="52" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#00f0ff"/>
-            <stop offset="100%" stop-color="#0088ff"/>
-        </linearGradient>
-    </defs>
-    <!-- Outer 3D Rim -->
-    <path d="M34 2L64 13V35C64 53.5 51.2 70.2 34 74C16.8 70.2 4 53.5 4 35V13L34 2Z" fill="url(#shieldRim)"/>
-    <!-- Inner Metallic Core -->
-    <path d="M34 6L59 15.5V34C59 49.5 48.4 64 34 67.5C19.6 64 9 49.5 9 34V15.5L34 6Z" fill="url(#shieldCore)"/>
-    <!-- 3D Bevel Highlight -->
-    <path d="M34 6L59 15.5V34C59 49.5 48.4 64 34 67.5V6Z" fill="white" fill-opacity="0.08"/>
-    <!-- Center Cyber Emblem -->
-    <path d="M34 20L47 25V35C47 43 41.5 50.5 34 53C26.5 50.5 21 43 21 35V25L34 20Z" fill="url(#shieldEmblem)"/>
-    <path d="M34 26L41 29V35C41 39.5 38 44 34 45.5V26Z" fill="white" fill-opacity="0.25"/>
-</svg>
-"""
+SHIELD_3D_SVG = """<svg width="68" height="74" viewBox="0 0 68 74" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.6));">
+<defs>
+<linearGradient id="shieldRim" x1="0" y1="0" x2="68" y2="74" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#00f0ff"/>
+<stop offset="50%" stop-color="#0066ff"/>
+<stop offset="100%" stop-color="#001a4d"/>
+</linearGradient>
+<linearGradient id="shieldCore" x1="34" y1="6" x2="34" y2="66" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#08214d"/>
+<stop offset="100%" stop-color="#020d20"/>
+</linearGradient>
+<linearGradient id="shieldEmblem" x1="20" y1="20" x2="48" y2="52" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#00f0ff"/>
+<stop offset="100%" stop-color="#0088ff"/>
+</linearGradient>
+</defs>
+<path d="M34 2L64 13V35C64 53.5 51.2 70.2 34 74C16.8 70.2 4 53.5 4 35V13L34 2Z" fill="url(#shieldRim)"/>
+<path d="M34 6L59 15.5V34C59 49.5 48.4 64 34 67.5C19.6 64 9 49.5 9 34V15.5L34 6Z" fill="url(#shieldCore)"/>
+<path d="M34 6L59 15.5V34C59 49.5 48.4 64 34 67.5V6Z" fill="white" fill-opacity="0.08"/>
+<path d="M34 20L47 25V35C47 43 41.5 50.5 34 53C26.5 50.5 21 43 21 35V25L34 20Z" fill="url(#shieldEmblem)"/>
+<path d="M34 26L41 29V35C41 39.5 38 44 34 45.5V26Z" fill="white" fill-opacity="0.25"/>
+</svg>"""
 
-# ==============================================================================
-# HEADER: 3D SHIELD LOGO + SCAMSHIELD INDIA TITLE (No-Indent Fix)
-# ==============================================================================
 banner_html = f"""<div class="hud-banner">
 <div class="hud-title-wrap">
 {SHIELD_3D_SVG}
@@ -277,6 +290,7 @@ banner_html = f"""<div class="hud-banner">
 </div>"""
 
 st.markdown(banner_html, unsafe_allow_html=True)
+
 
 # ==============================================================================
 # MAIN TABS (LANDING PAGE FIRST)
@@ -290,7 +304,7 @@ tab_home, tab_scanner, tab_history, tab_emergency = st.tabs([
 
 
 # ==============================================================================
-# TAB 1: LANDING PAGE & THREAT HUB (SCAM TYPES + VISUALS + SCAN/REPORT BUTTONS)
+# TAB 1: LANDING PAGE & THREAT HUB (SCAM TYPES WITH SCROLL ARISE EFFECT)
 # ==============================================================================
 with tab_home:
     st.write("")
@@ -308,9 +322,9 @@ with tab_home:
 
     st.write("")
     st.markdown("### 📚 Prevalent Indian Cyber Scams & Warning Signs")
-    st.caption("Review how modern digital payment scams, panic tactics, and malware impersonations operate.")
+    st.caption("Scroll down to explore how digital payment scams, panic tactics, and malware impersonations operate.")
 
-    # Visual Scam Vectors Grid
+    # Top Row Cards
     r1_c1, r1_c2, r1_c3 = st.columns(3)
 
     with r1_c1:
@@ -321,7 +335,7 @@ with tab_home:
             <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5;">
                 Fraudsters send QR codes or collect requests via PhonePe, GPay, or Paytm, falsely claiming you won a cashback reward.
             </p>
-            <div style="background:#020b18; padding:10px; border-radius:6px; font-size:0.82rem; color:#ffbb00; margin-top:8px;">
+            <div style="background:#040c1a; padding:10px; border-radius:6px; font-size:0.82rem; color:#ffbb00; margin-top:8px;">
                 ⚠️ <strong>The Golden Rule:</strong> You NEVER need to enter your UPI PIN to RECEIVE money.
             </div>
         </div>
@@ -335,7 +349,7 @@ with tab_home:
             <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5;">
                 Callers impersonating CBI or Mumbai Police claim your Aadhaar is tied to illegal drug parcels or money laundering.
             </p>
-            <div style="background:#020b18; padding:10px; border-radius:6px; font-size:0.82rem; color:#ff3366; margin-top:8px;">
+            <div style="background:#040c1a; padding:10px; border-radius:6px; font-size:0.82rem; color:#ff3366; margin-top:8px;">
                 ⚠️ <strong>Legal Reality:</strong> Indian law has NO 'Digital Arrest'. Police never conduct trials over Skype or video calls.
             </div>
         </div>
@@ -349,12 +363,13 @@ with tab_home:
             <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5;">
                 SMS threats claiming electricity will be disconnected tonight unless you call an unauthorized 10-digit mobile number.
             </p>
-            <div style="background:#020b18; padding:10px; border-radius:6px; font-size:0.82rem; color:#00e5ff; margin-top:8px;">
+            <div style="background:#040c1a; padding:10px; border-radius:6px; font-size:0.82rem; color:#00e5ff; margin-top:8px;">
                 ⚠️ <strong>Defense:</strong> State DISCOMs never send disconnection threats from personal WhatsApp numbers.
             </div>
         </div>
         """, unsafe_allow_html=True)
 
+    # Bottom Row Cards (These arise smoothly when you scroll down)
     r2_c1, r2_c2, r2_c3 = st.columns(3)
 
     with r2_c1:
@@ -365,7 +380,7 @@ with tab_home:
             <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5;">
                 Fake update links promising exclusive themes or features that drop spyware APKs to siphon banking OTPs and passwords.
             </p>
-            <div style="background:#020b18; padding:10px; border-radius:6px; font-size:0.82rem; color:#ffbb00; margin-top:8px;">
+            <div style="background:#040c1a; padding:10px; border-radius:6px; font-size:0.82rem; color:#ffbb00; margin-top:8px;">
                 ⚠️ <strong>Defense:</strong> Official apps are NEVER distributed through `.apk` links or third-party web domains.
             </div>
         </div>
@@ -379,7 +394,7 @@ with tab_home:
             <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5;">
                 Promises ₹3,500 daily for liking YouTube videos. Scammers give small initial payouts before demanding deposits.
             </p>
-            <div style="background:#020b18; padding:10px; border-radius:6px; font-size:0.82rem; color:#ff3366; margin-top:8px;">
+            <div style="background:#040c1a; padding:10px; border-radius:6px; font-size:0.82rem; color:#ff3366; margin-top:8px;">
                 ⚠️ <strong>Defense:</strong> Legitimate companies never recruit or conduct investments through Telegram groups.
             </div>
         </div>
@@ -393,7 +408,7 @@ with tab_home:
             <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5;">
                 SMS threats that your SBI, HDFC, or ICICI account is blocked today unless you update PAN details on an unauthorized link.
             </p>
-            <div style="background:#020b18; padding:10px; border-radius:6px; font-size:0.82rem; color:#00e5ff; margin-top:8px;">
+            <div style="background:#040c1a; padding:10px; border-radius:6px; font-size:0.82rem; color:#00e5ff; margin-top:8px;">
                 ⚠️ <strong>Defense:</strong> Banks never ask you to update KYC via SMS links. Always use the verified mobile app.
             </div>
         </div>
@@ -401,14 +416,14 @@ with tab_home:
 
 
 # ==============================================================================
-# TAB 2: THREAT SCANNER (WITH BARS INSTEAD OF MCQ RADIO CIRCLES)
+# TAB 2: THREAT SCANNER
 # ==============================================================================
 with tab_scanner:
     st.write("")
     st.markdown("### ⚡ Live Fraud & Phishing Detection")
     st.caption("Analyze suspicious messages, phishing emails, links, or uploaded screenshots.")
 
-    # Input format rendered as BARS (Segmented Control - NO MCQ CIRCLES)
+    # Input format rendered as BARS
     selected_bar = st.segmented_control(
         "Choose Input Format:",
         ["💬 Text / SMS / Link", "📧 Email Phishing", "📷 Upload Screenshot (OCR)"],
@@ -462,7 +477,7 @@ with tab_scanner:
                 scan_type = "Screenshot"
 
     st.write("")
-    if st.button("🛡️ ANALYZE THREAT NOW", type="primary", use_container_width=True):
+    if st.button("🛡️ ANALYZE THREAT NOW", type="primary", width="stretch"):
         if not active_text:
             st.warning("Please enter text or upload an image first.")
         else:
@@ -523,7 +538,7 @@ with tab_scanner:
 
             st.caption(f"💾 Incident saved to local forensics audit log (Record ID #{db_id})")
 
-            # Explainable Indicators
+            # Explainable Indicators (Arises smoothly as you scroll into them)
             st.markdown("### 🔍 Explainable Red Flags Detected")
 
             for ew in email_warnings:
@@ -595,7 +610,7 @@ with tab_history:
                     if item["image_filename"]:
                         img_path = os.path.join(UPLOAD_DIR, item["image_filename"])
                         if os.path.exists(img_path):
-                            st.image(img_path, caption="Saved Screenshot Evidence", use_container_width=True)
+                            st.image(img_path, caption="Saved Screenshot Evidence", width="stretch")
 
 
 # ==============================================================================
@@ -604,7 +619,7 @@ with tab_history:
 with tab_emergency:
     st.write("")
     st.markdown("""
-    <div style="border: 1px solid #ff3366; background: rgba(255, 51, 102, 0.1); box-shadow: 0 0 25px rgba(255, 51, 102, 0.2); border-radius: 8px; padding: 24px; margin-bottom: 25px;">
+    <div class="emergency-hud" style="border: 1px solid #ff3366; background: rgba(255, 51, 102, 0.1); box-shadow: 0 0 25px rgba(255, 51, 102, 0.2); border-radius: 8px; padding: 24px; margin-bottom: 25px;">
         <h2 style="font-family:'Orbitron'; color:#ff3366; margin:0 0 8px 0;">NATIONAL CYBERCRIME HELPLINE: 1930</h2>
         <p style="font-size:1.05rem; color:#f0f9ff; margin:0; line-height:1.6;">
             If you have suffered an unauthorized financial deduction, dial <strong>1930</strong> immediately. 
@@ -619,12 +634,12 @@ with tab_emergency:
     with col_e1:
         st.subheader("1. National Portal")
         st.markdown("File complaints for financial fraud, identity theft, or social media harassment.")
-        st.link_button("🌐 cybercrime.gov.in", "https://cybercrime.gov.in", use_container_width=True)
+        st.link_button("🌐 cybercrime.gov.in", "https://cybercrime.gov.in", width="stretch")
 
     with col_e2:
         st.subheader("2. Sanchar Saathi (Chakshu)")
         st.markdown("Report fraudulent calls, spam SMS headers, and rogue WhatsApp numbers.")
-        st.link_button("📱 Chakshu Portal", "https://sancharsaathi.gov.in", use_container_width=True)
+        st.link_button("📱 Chakshu Portal", "https://sancharsaathi.gov.in", width="stretch")
 
     with col_e3:
         st.subheader("3. Bank Card Freeze")
