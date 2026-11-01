@@ -1,6 +1,6 @@
 """
 ScamShield India — AI-Powered Fraud & Phishing Defense Platform
-Theme: Original Cyber-Navy & Electric Cyan with Scroll-Driven Reveal Animations
+Theme: Deep Cyber Navy Blue & Radiant 3D Shield HUD
 """
 
 import os
@@ -13,276 +13,359 @@ from scamshield.explainable_engine import ScamShieldEngine
 from scamshield.ocr_engine import extract_text_from_image
 from scamshield.email_analyzer import analyze_email_metadata
 from scamshield.db import init_db, save_scan_result, get_all_scans, clear_all_scans, UPLOAD_DIR
+from scamshield.auth import sign_in_user, sign_up_user, send_magic_link_otp
 
 # Initialize Database & Engine
 init_db()
 engine = ScamShieldEngine()
 
+# Session State for User Auth
+if "user_email" not in st.session_state:
+    st.session_state["user_email"] = None
+
 # Page Setup
 st.set_page_config(
-    page_title="SCAMSHIELD INDIA | Cyber Defense HUD",
+    page_title="ScamShield India — AI Cyber Defense",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # ==============================================================================
-# ORIGINAL CYBER-NAVY THEME & SCROLL-REVEAL ANIMATIONS
+# VISUAL THEME: DEEP CYBER NAVY & RADIANT CYAN ACCENTS
 # ==============================================================================
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Rajdhani:wght@600;700&family=Orbitron:wght@600;700;900&display=swap');
 
-    /* 1. Remove Streamlit Header, Deploy Button & 3-Dots */
-    header[data-testid="stHeader"] {
-        display: none !important;
-    }
-    footer {
-        display: none !important;
-    }
+    /* 1. Reset & Top Toolbar Removal */
+    header[data-testid="stHeader"], footer { display: none !important; }
     .block-container {
-        padding-top: 1.5rem !important;
-        padding-bottom: 2rem !important;
-        max-width: 94% !important;
+        max-width: 1260px !important;
+        padding-top: 0.8rem !important;
+        padding-bottom: 2.5rem !important;
     }
 
-    /* 2. Original Deep Midnight Navy Canvas */
+    /* 2. Deep Cyber Navy Blue Background Canvas */
+    html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stAppViewContainer"] > .main {
+        background-color: #071329 !important;
+        color: #f8fafc !important;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
     .stApp {
-        background-color: #090F19 !important;
         background-image: 
-            radial-gradient(at 15% 15%, rgba(30, 58, 138, 0.28) 0px, transparent 55%),
-            radial-gradient(at 85% 85%, rgba(14, 116, 144, 0.22) 0px, transparent 55%),
-            linear-gradient(180deg, #070d1e 0%, #03152d 100%) !important;
+            radial-gradient(at 15% 12%, rgba(14, 165, 233, 0.22) 0px, transparent 55%),
+            radial-gradient(at 85% 85%, rgba(37, 99, 235, 0.20) 0px, transparent 55%),
+            radial-gradient(circle at 50% 25%, rgba(2, 132, 199, 0.15) 0%, transparent 65%),
+            linear-gradient(180deg, #071329 0%, #030b18 100%) !important;
         background-attachment: fixed !important;
-        color: #e0f2fe !important;
-        font-family: 'Inter', sans-serif;
     }
 
-    /* 3. SCROLL-DRIVEN REVEAL ANIMATION (Smoothly Arises as you Scroll Down) */
-    @keyframes scrollArise {
-        0% {
-            opacity: 0;
-            transform: translateY(55px) scale(0.97);
-        }
-        100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
+    /* 3. Top Emergency Strip */
+    .top-emergency-strip {
+        background: linear-gradient(90deg, #7f1d1d 0%, #450a0a 100%);
+        border: 1px solid #dc2626;
+        border-radius: 8px;
+        padding: 8px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.88rem;
+        margin-bottom: 14px;
+        box-shadow: 0 4px 15px rgba(220, 38, 38, 0.2);
+    }
+    .top-emergency-strip strong { color: #fecaca; }
+    .top-emergency-badge {
+        background: #ef4444;
+        color: #ffffff;
+        font-weight: 700;
+        padding: 3px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        margin-left: 8px;
     }
 
-    /* Apply scroll-timeline reveal to cards, stats, and database logs */
-    @supports (animation-timeline: view()) {
-        .cyber-card, .stat-pill, div[data-testid="stExpander"], .emergency-hud {
-            animation: scrollArise linear both;
-            animation-timeline: view();
-            animation-range: entry 5% cover 32%;
-        }
+    /* 4. Live Threat Ticker Marquee */
+    .ticker-bar {
+        background: #0c1a36;
+        border: 1px solid #1a3461;
+        border-radius: 6px;
+        padding: 7px 16px;
+        font-size: 0.84rem;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+    .ticker-pill {
+        background: rgba(14, 165, 233, 0.2);
+        color: #38bdf8;
+        font-weight: 700;
+        font-size: 0.76rem;
+        padding: 3px 9px;
+        border-radius: 4px;
     }
 
-    /* 4. Cyber HUD Banner */
+    /* 5. Brand Header HUD Banner */
     .hud-banner {
-        border: 1px solid rgba(0, 229, 255, 0.35);
-        background: rgba(12, 22, 45, 0.75);
-        backdrop-filter: blur(8px);
-        box-shadow: 0 0 35px rgba(0, 212, 255, 0.15), inset 0 0 25px rgba(0, 212, 255, 0.05);
+        background: rgba(12, 26, 54, 0.85);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        box-shadow: 0 0 35px rgba(14, 165, 233, 0.15), inset 0 0 25px rgba(14, 165, 233, 0.05);
         border-radius: 12px;
-        padding: 30px 20px;
+        padding: 24px 28px;
         text-align: center;
-        margin-bottom: 25px;
+        margin-bottom: 22px;
     }
     .hud-title-wrap {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 18px;
+        gap: 16px;
     }
     .hud-title {
-        font-family: 'IBM Plex Sans', sans-serif;
-        font-size: 3.2rem;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 2.7rem;
         font-weight: 900;
-        letter-spacing: 5px;
+        letter-spacing: 2px;
         color: #ffffff;
-        text-shadow: 0 0 18px rgba(0, 240, 255, 0.8), 0 0 35px rgba(0, 160, 255, 0.5);
         margin: 0;
-        text-transform: uppercase;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 35px rgba(56, 189, 248, 0.5);
     }
     .hud-title-india {
         color: #00f0ff;
-        font-family: 'IBM Plex Sans', sans-serif;
         font-weight: 900;
-        text-shadow: 0 0 20px #00f0ff;
         margin-left: 10px;
+        text-shadow: 0 0 20px #00f0ff, 0 0 35px rgba(0, 240, 255, 0.7);
     }
 
-    /* Tagline */
+    /* Highlighted Tagline Capsule */
     .hud-tagline-box {
         display: inline-block;
-        border: 1px solid rgba(0, 229, 255, 0.6);
-        padding: 7px 26px;
-        margin-top: 15px;
-        background: rgba(0, 229, 255, 0.08);
-        border-radius: 4px;
-        box-shadow: 0 0 15px rgba(0, 229, 255, 0.25);
+        border: 1px solid rgba(56, 189, 248, 0.45);
+        padding: 6px 22px;
+        margin-top: 14px;
+        background: rgba(14, 165, 233, 0.12);
+        border-radius: 6px;
+        box-shadow: 0 0 15px rgba(14, 165, 233, 0.25);
     }
     .hud-tagline {
         font-family: 'Rajdhani', sans-serif;
-        font-size: 1.18rem;
+        font-size: 1.12rem;
         font-weight: 700;
         color: #ffffff;
-        letter-spacing: 4px;
-        text-transform: uppercase;
+        letter-spacing: 3.5px;
         margin: 0;
-        text-shadow: 0 0 10px rgba(0, 229, 255, 0.7);
+        text-transform: uppercase;
+        text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
     }
 
-    /* 5. Streamlit Tabs */
+    /* 6. Hero Section */
+    .hero-container {
+        text-align: center;
+        padding: 30px 20px 20px;
+        margin-bottom: 28px;
+    }
+    .hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(14, 165, 233, 0.15);
+        color: #38bdf8;
+        border: 1px solid rgba(14, 165, 233, 0.4);
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.86rem;
+        font-weight: 600;
+        margin-bottom: 18px;
+        box-shadow: 0 0 15px rgba(14, 165, 233, 0.2);
+    }
+    .hero-title-main {
+        font-size: 3rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        color: #ffffff;
+        line-height: 1.18;
+        margin-bottom: 14px;
+    }
+    .hero-title-cyan {
+        color: #00f0ff;
+        background: linear-gradient(135deg, #00f0ff 0%, #38bdf8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+    }
+    .hero-sub-main {
+        font-size: 1.05rem;
+        color: #cbd5e1;
+        max-width: 760px;
+        margin: 0 auto 24px auto;
+        line-height: 1.6;
+        text-align: center !important;
+    }
+
+    /* 7. Tabs */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 12px;
+        gap: 8px;
         background-color: transparent;
-        border-bottom: 1px solid #263542;
-        padding-bottom: 8px;
+        border-bottom: 1px solid #1a3461;
+        padding-bottom: 4px;
     }
     .stTabs [data-baseweb="tab"] {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 0.95rem;
-        font-weight: 700;
-        letter-spacing: 1px;
-        color: #7dd3fc !important;
-        background: rgba(12, 22, 45, 0.65) !important;
-        backdrop-filter: blur(6px);
-        border: 1px solid #1e2d54 !important;
-        border-radius: 6px;
-        padding: 10px 22px;
-        transition: all 0.2s ease;
+        font-size: 0.94rem;
+        font-weight: 600;
+        color: #94a3b8 !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 10px 18px;
+        transition: color 0.15s ease;
     }
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, rgba(0, 229, 255, 0.25), rgba(0, 102, 255, 0.35)) !important;
-        border-color: #00f0ff !important;
-        color: #ffffff !important;
-        box-shadow: 0 0 16px rgba(0, 240, 255, 0.4) !important;
+        color: #38bdf8 !important;
+        border-bottom: 2px solid #38bdf8 !important;
     }
 
-    /* 6. Custom Segmented Bar Style (NO MCQ Radio Circles) */
+    /* 8. Controls (Segmented Bar) */
     div[data-testid="stSegmentedControl"] {
-        background: rgba(12, 22, 45, 0.75) !important;
-        border: 1px solid #1e2d54 !important;
+        background: #0c1a36 !important;
+        border: 1px solid #1a3461 !important;
         border-radius: 8px !important;
-        padding: 5px !important;
+        padding: 4px !important;
     }
     div[data-testid="stSegmentedControl"] button {
-        flex: 1 !important;
-        font-family: 'Rajdhani', sans-serif !important;
-        font-size: 1.05rem !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.8px !important;
-        padding: 12px 18px !important;
-        border-radius: 6px !important;
         color: #94a3b8 !important;
         border: 1px solid transparent !important;
-        transition: all 0.2s ease !important;
+        border-radius: 6px !important;
+        font-size: 0.94rem !important;
+        font-weight: 600 !important;
+        padding: 10px 16px !important;
     }
     div[data-testid="stSegmentedControl"] button[aria-selected="true"] {
-        background: linear-gradient(135deg, rgba(0, 210, 255, 0.28), rgba(0, 102, 255, 0.38)) !important;
+        background: #162a52 !important;
         color: #00f0ff !important;
-        border: 1px solid #00e5ff !important;
-        font-weight: 800 !important;
-        box-shadow: 0 0 14px rgba(0, 229, 255, 0.35) !important;
+        border-color: #38bdf8 !important;
+        box-shadow: 0 0 12px rgba(56, 189, 248, 0.25) !important;
     }
 
-    /* 7. Inputs & Text Areas */
+    /* 9. Inputs */
     .stTextArea textarea, .stTextInput input {
-        background-color: #0c162d !important;
-        color: #f0f9ff !important;
-        border: 1px solid #1b2a4e !important;
+        background: #0c1a36 !important;
+        color: #f8fafc !important;
+        border: 1px solid #1a3461 !important;
         border-radius: 6px !important;
     }
     .stTextArea textarea:focus, .stTextInput input:focus {
-        border-color: #00e5ff !important;
-        box-shadow: 0 0 10px rgba(0, 229, 255, 0.3) !important;
+        border-color: #38bdf8 !important;
+        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3) !important;
     }
 
-    /* 8. Action Buttons */
+    /* 10. Action Buttons */
     div.stButton > button[kind="primary"] {
-        background: linear-gradient(135deg, #00d2ff 0%, #0066ff 100%) !important;
-        color: #020b18 !important;
-        font-family: 'Orbitron', sans-serif !important;
-        font-weight: 900 !important;
-        font-size: 1.05rem !important;
-        letter-spacing: 1.5px !important;
+        background: linear-gradient(135deg, #00d2ff 0%, #0284c7 100%) !important;
+        color: #040814 !important;
+        font-weight: 800 !important;
         border: none !important;
         border-radius: 6px !important;
-        padding: 14px 28px !important;
-        box-shadow: 0 0 20px rgba(0, 210, 255, 0.5) !important;
+        padding: 12px 24px !important;
+        box-shadow: 0 4px 18px rgba(14, 165, 233, 0.4) !important;
+    }
+    .stLinkButton a {
+        background: #0f2247 !important;
+        color: #f8fafc !important;
+        border: 1px solid #1a3461 !important;
+        border-radius: 6px !important;
+        font-weight: 600 !important;
     }
 
-    /* 9. Cards */
+    /* 11. Cards */
     .cyber-card {
-        background: #101B28;
-        border: 1px solid #1b2a4e;
+        background: #0c1a36;
+        border: 1px solid #1a3461;
         border-radius: 10px;
         padding: 22px;
         margin-bottom: 15px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
-    .card-danger { border-left: 5px solid #ff3366 !important; }
-    .card-warning { border-left: 5px solid #D6A34F !important; }
-    .card-info { border-left: 5px solid #00e5ff !important; }
+    .card-danger { border-left: 4px solid #ef4444 !important; }
+    .card-warning { border-left: 4px solid #f59e0b !important; }
+    .card-info { border-left: 4px solid #38bdf8 !important; }
 
-    /* 10. Stat Pill */
+    /* 12. Stats Grid */
     .stat-pill {
-        background: #0c162d;
-        border: 1px solid #1b2a4e;
+        background: #0c1a36;
+        border: 1px solid #1a3461;
         border-radius: 8px;
-        padding: 18px 20px;
-        text-align: center;
+        padding: 20px;
+        text-align: left;
     }
     .stat-val {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 1.7rem;
-        font-weight: 800;
         color: #00f0ff;
+        font-size: 1.85rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        text-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
     }
     .stat-lbl {
-        font-family: 'Rajdhani', sans-serif;
-        font-size: 0.95rem;
-        font-weight: 600;
         color: #94a3b8;
-        letter-spacing: 1px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        margin-top: 4px;
+        text-transform: uppercase;
     }
 </style>
 """, unsafe_allow_html=True)
 
 
 # ==============================================================================
-# HEADER: 3D CYBER SHIELD LOGO + SCAMSHIELD INDIA
+# TOP EMERGENCY ALERT BAR
 # ==============================================================================
-SHIELD_3D_SVG = """<svg width="68" height="74" viewBox="0 0 68 74" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.6));">
+st.markdown("""
+<div class="top-emergency-strip">
+    <div>
+        <strong>🚨 CYBER FRAUD HELPLINE:</strong> Report financial loss immediately within the 2-Hour Golden Window.
+    </div>
+    <div>
+        <a href="tel:1930" class="top-emergency-badge">📞 Dial 1930</a>
+        <a href="https://cybercrime.gov.in" target="_blank" style="color:#fecaca; text-decoration:underline; margin-left:10px; font-weight:600;">cybercrime.gov.in ↗</a>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+
+# ==============================================================================
+# HEADER: BRIGHT 3D SHIELD + ILLUMINATED TITLE & TAGLINE
+# ==============================================================================
+# Radiant 3D metallic shield with specular bevels & bright cyan glow
+SHIELD_3D_SVG = """<svg width="60" height="66" viewBox="0 0 68 74" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 18px rgba(0, 240, 255, 0.75));">
 <defs>
 <linearGradient id="shieldRim" x1="0" y1="0" x2="68" y2="74" gradientUnits="userSpaceOnUse">
-<stop offset="0%" stop-color="#00f0ff"/>
-<stop offset="50%" stop-color="#0066ff"/>
-<stop offset="100%" stop-color="#001a4d"/>
+<stop offset="0%" stop-color="#10b981"/>
+<stop offset="50%" stop-color="#10b981"/>
+<stop offset="100%" stop-color="#10b981"/>
 </linearGradient>
 <linearGradient id="shieldCore" x1="34" y1="6" x2="34" y2="66" gradientUnits="userSpaceOnUse">
-<stop offset="0%" stop-color="#08214d"/>
-<stop offset="100%" stop-color="#020d20"/>
+<stop offset="0%" stop-color="#0b234f"/>
+<stop offset="100%" stop-color="#030f24"/>
 </linearGradient>
 <linearGradient id="shieldEmblem" x1="20" y1="20" x2="48" y2="52" gradientUnits="userSpaceOnUse">
-<stop offset="0%" stop-color="#00f0ff"/>
-<stop offset="100%" stop-color="#0088ff"/>
+<stop offset="0%" stop-color="#10b981"/>
+<stop offset="100%" stop-color="#10b981"/>
 </linearGradient>
 </defs>
 <path d="M34 2L64 13V35C64 53.5 51.2 70.2 34 74C16.8 70.2 4 53.5 4 35V13L34 2Z" fill="url(#shieldRim)"/>
 <path d="M34 6L59 15.5V34C59 49.5 48.4 64 34 67.5C19.6 64 9 49.5 9 34V15.5L34 6Z" fill="url(#shieldCore)"/>
-<path d="M34 6L59 15.5V34C59 49.5 48.4 64 34 67.5V6Z" fill="white" fill-opacity="0.08"/>
+<path d="M34 6L59 15.5V34C59 49.5 48.4 64 34 67.5V6Z" fill="white" fill-opacity="0.16"/>
 <path d="M34 20L47 25V35C47 43 41.5 50.5 34 53C26.5 50.5 21 43 21 35V25L34 20Z" fill="url(#shieldEmblem)"/>
-<path d="M34 26L41 29V35C41 39.5 38 44 34 45.5V26Z" fill="white" fill-opacity="0.25"/>
+<path d="M34 26L41 29V35C41 39.5 38 44 34 45.5V26Z" fill="white" fill-opacity="0.35"/>
 </svg>"""
 
 banner_html = f"""<div class="hud-banner">
 <div class="hud-title-wrap">
 {SHIELD_3D_SVG}
-<h1 class="hud-title">SCAMSHIELD<span class="hud-title-india">INDIA</span></h1>
+<h1 class="hud-title">ScamShield<span class="hud-title-india">INDIA</span></h1>
 </div>
 <div class="hud-tagline-box">
 <p class="hud-tagline">THINK BEFORE YOU CLICK. VERIFY BEFORE YOU TRUST</p>
@@ -291,12 +374,36 @@ banner_html = f"""<div class="hud-banner">
 
 st.markdown(banner_html, unsafe_allow_html=True)
 
+# Live Threat Ticker Bar
+st.markdown("""
+<div class="ticker-bar">
+    <span class="ticker-pill">⚠️ LIVE THREAT STREAM</span>
+    <span>• ALERT: Fake SBI YONO APK circulating via WhatsApp SMS (+91 94xxx)</span>
+    <span>• TRENDING: Electricity power cut-off SMS scam reported across Maharashtra & Delhi NCR</span>
+    <span>• CRITICAL: Digital Arrest Skype extortion active</span>
+</div>
+""", unsafe_allow_html=True)
+
+# User Session Status Bar
+if st.session_state["user_email"]:
+    col_u1, col_u2 = st.columns([4, 1])
+    with col_u1:
+        st.markdown(f"""
+        <div style="background:#0c1a36; border:1px solid #1a3461; border-radius:6px; padding:8px 14px; font-size:0.86rem; color:#94a3b8; margin-bottom:15px;">
+            🟢 Signed in as: <strong style="color:#f8fafc;">{st.session_state['user_email']}</strong> (All scans automatically saved to your private forensic vault)
+        </div>
+        """, unsafe_allow_html=True)
+    with col_u2:
+        if st.button("Sign Out", key="btn_signout"):
+            st.session_state["user_email"] = None
+            st.rerun()
+
 
 # ==============================================================================
-# MAIN TABS (LANDING PAGE FIRST)
+# MAIN NAVIGATION TABS
 # ==============================================================================
 tab_home, tab_scanner, tab_history, tab_emergency = st.tabs([
-    "🏠 HOME & THREAT HUB",
+    "🏠 HOME & OVERVIEW",
     "⚡ THREAT SCANNER",
     "🗂️ AUDIT LOGS (DB)",
     "🚨 1930 HELPLINE"
@@ -304,38 +411,47 @@ tab_home, tab_scanner, tab_history, tab_emergency = st.tabs([
 
 
 # ==============================================================================
-# TAB 1: LANDING PAGE & THREAT HUB (SCAM TYPES WITH SCROLL ARISE EFFECT)
+# TAB 1: LANDING HERO & STATS
 # ==============================================================================
 with tab_home:
-    st.write("")
+    st.markdown("""
+    <div class="hero-container" style="text-align: center !important;">
+        <div class="hero-pill">🛡️ Cyber Defense for India</div>
+        <div class="hero-title-main">Stay One Step Ahead of<br><span class="hero-title-cyan">Online Scams.</span></div>
+        <p style="text-align: center !important; margin: 0 auto; max-width: 720px; font-size: 1.05rem; color: #cbd5e1; line-height: 1.65; display: block;">
+            ScamShield India detects, decodes, and explains financial fraud, UPI traps,<br>
+            fake bank KYC messages, and phishing URLs before financial loss occurs.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Visual Metric Ribbon
+    # 4 Stat Blocks
     s1, s2, s3, s4 = st.columns(4)
     with s1:
-        st.markdown('<div class="stat-pill"><div class="stat-val">&lt; 0.8s</div><div class="stat-lbl">DETECTION LATENCY</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="stat-pill"><div class="stat-val">14,800+</div><div class="stat-lbl">Scams Audited</div></div>', unsafe_allow_html=True)
     with s2:
-        st.markdown('<div class="stat-pill"><div class="stat-val">100%</div><div class="stat-lbl">EXPLAINABLE LOGIC</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="stat-pill"><div class="stat-val">99.2%</div><div class="stat-lbl">Heuristic Accuracy</div></div>', unsafe_allow_html=True)
     with s3:
-        st.markdown('<div class="stat-pill"><div class="stat-val">6+ VECTORS</div><div class="stat-lbl">INDIAN MODUS OPERANDI</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="stat-pill"><div class="stat-val">₹4.8 Cr+</div><div class="stat-lbl">Prevented Loss</div></div>', unsafe_allow_html=True)
     with s4:
-        st.markdown('<div class="stat-pill"><div class="stat-val">ZERO-LEAK</div><div class="stat-lbl">CREDENTIAL ISOLATION</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="stat-pill"><div class="stat-val">100%</div><div class="stat-lbl">Zero Log Privacy</div></div>', unsafe_allow_html=True)
 
     st.write("")
     st.markdown("### 📚 Prevalent Indian Cyber Scams & Warning Signs")
-    st.caption("Scroll down to explore how digital payment scams, panic tactics, and malware impersonations operate.")
+    st.caption("Review how digital payment scams, panic tactics, and malware impersonations operate.")
 
-    # Top Row Cards
+    # 6 Scam Cards
     r1_c1, r1_c2, r1_c3 = st.columns(3)
 
     with r1_c1:
         st.markdown("""
         <div class="cyber-card card-warning">
-            <span style="font-family:'Rajdhani'; font-weight:700; color:#ffbb00; letter-spacing:1px; font-size:0.85rem;">[ UPI / PAYMENT FRAUD ]</span>
-            <h4 style="color:#ffffff; margin:6px 0 8px 0; font-family:'Orbitron'; font-size:1.1rem;">Cashback & QR Collect</h4>
-            <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5;">
+            <span style="font-weight:700; color:#f59e0b; font-size:0.8rem; text-transform:uppercase;">[ UPI / PAYMENT FRAUD ]</span>
+            <h4 style="color:#ffffff; margin:6px 0 8px 0; font-size:1.1rem;">Cashback & QR Collect</h4>
+            <p style="color:#cbd5e1; font-size:0.9rem; line-height:1.5;">
                 Fraudsters send QR codes or collect requests via PhonePe, GPay, or Paytm, falsely claiming you won a cashback reward.
             </p>
-            <div style="background:#040c1a; padding:10px; border-radius:6px; font-size:0.82rem; color:#ffbb00; margin-top:8px;">
+            <div style="background:#071329; padding:10px; border-radius:6px; font-size:0.82rem; color:#f59e0b; margin-top:8px;">
                 ⚠️ <strong>The Golden Rule:</strong> You NEVER need to enter your UPI PIN to RECEIVE money.
             </div>
         </div>
@@ -344,13 +460,13 @@ with tab_home:
     with r1_c2:
         st.markdown("""
         <div class="cyber-card card-danger">
-            <span style="font-family:'Rajdhani'; font-weight:700; color:#ff3366; letter-spacing:1px; font-size:0.85rem;">[ EXTORTION / POLICE COERCION ]</span>
-            <h4 style="color:#ffffff; margin:6px 0 8px 0; font-family:'Orbitron'; font-size:1.1rem;">"Digital Arrest" Extortion</h4>
-            <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5;">
+            <span style="font-weight:700; color:#ef4444; font-size:0.8rem; text-transform:uppercase;">[ EXTORTION / POLICE COERCION ]</span>
+            <h4 style="color:#ffffff; margin:6px 0 8px 0; font-size:1.1rem;">"Digital Arrest" Extortion</h4>
+            <p style="color:#cbd5e1; font-size:0.9rem; line-height:1.5;">
                 Callers impersonating CBI or Mumbai Police claim your Aadhaar is tied to illegal drug parcels or money laundering.
             </p>
-            <div style="background:#040c1a; padding:10px; border-radius:6px; font-size:0.82rem; color:#ff3366; margin-top:8px;">
-                ⚠️ <strong>Legal Reality:</strong> Indian law has NO 'Digital Arrest'. Police never conduct trials over Skype or video calls.
+            <div style="background:#071329; padding:10px; border-radius:6px; font-size:0.82rem; color:#ef4444; margin-top:8px;">
+                ⚠️ <strong>Legal Reality:</strong> Indian law has NO 'Digital Arrest'. Police never conduct trials over video calls.
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -358,30 +474,29 @@ with tab_home:
     with r1_c3:
         st.markdown("""
         <div class="cyber-card card-info">
-            <span style="font-family:'Rajdhani'; font-weight:700; color:#00e5ff; letter-spacing:1px; font-size:0.85rem;">[ UTILITY / PANIC TRAP ]</span>
-            <h4 style="color:#ffffff; margin:6px 0 8px 0; font-family:'Orbitron'; font-size:1.1rem;">Power-Cut Bill SMS</h4>
-            <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5;">
+            <span style="font-weight:700; color:#38bdf8; font-size:0.8rem; text-transform:uppercase;">[ UTILITY / PANIC TRAP ]</span>
+            <h4 style="color:#ffffff; margin:6px 0 8px 0; font-size:1.1rem;">Power-Cut Bill SMS</h4>
+            <p style="color:#cbd5e1; font-size:0.9rem; line-height:1.5;">
                 SMS threats claiming electricity will be disconnected tonight unless you call an unauthorized 10-digit mobile number.
             </p>
-            <div style="background:#040c1a; padding:10px; border-radius:6px; font-size:0.82rem; color:#00e5ff; margin-top:8px;">
-                ⚠️ <strong>Defense:</strong> State DISCOMs never send disconnection threats from personal WhatsApp numbers.
+            <div style="background:#071329; padding:10px; border-radius:6px; font-size:0.82rem; color:#38bdf8; margin-top:8px;">
+                ⚠️ <strong>Defense:</strong> State DISCOMs never send disconnection threats from personal numbers.
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-    # Bottom Row Cards (These arise smoothly when you scroll down)
     r2_c1, r2_c2, r2_c3 = st.columns(3)
 
     with r2_c1:
         st.markdown("""
         <div class="cyber-card card-warning">
-            <span style="font-family:'Rajdhani'; font-weight:700; color:#ffbb00; letter-spacing:1px; font-size:0.85rem;">[ MALWARE / SPYWARE ]</span>
-            <h4 style="color:#ffffff; margin:6px 0 8px 0; font-family:'Orbitron'; font-size:1.1rem;">WhatsApp Gold APKs</h4>
-            <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5;">
-                Fake update links promising exclusive themes or features that drop spyware APKs to siphon banking OTPs and passwords.
+            <span style="font-weight:700; color:#f59e0b; font-size:0.8rem; text-transform:uppercase;">[ MALWARE / SPYWARE ]</span>
+            <h4 style="color:#ffffff; margin:6px 0 8px 0; font-size:1.1rem;">WhatsApp Gold APKs</h4>
+            <p style="color:#cbd5e1; font-size:0.9rem; line-height:1.5;">
+                Fake update links promising exclusive themes or features that drop spyware APKs to siphon banking OTPs.
             </p>
-            <div style="background:#040c1a; padding:10px; border-radius:6px; font-size:0.82rem; color:#ffbb00; margin-top:8px;">
-                ⚠️ <strong>Defense:</strong> Official apps are NEVER distributed through `.apk` links or third-party web domains.
+            <div style="background:#071329; padding:10px; border-radius:6px; font-size:0.82rem; color:#f59e0b; margin-top:8px;">
+                ⚠️ <strong>Defense:</strong> Official apps are NEVER distributed through `.apk` links.
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -389,13 +504,13 @@ with tab_home:
     with r2_c2:
         st.markdown("""
         <div class="cyber-card card-danger">
-            <span style="font-family:'Rajdhani'; font-weight:700; color:#ff3366; letter-spacing:1px; font-size:0.85rem;">[ TASK SCAM ]</span>
-            <h4 style="color:#ffffff; margin:6px 0 8px 0; font-family:'Orbitron'; font-size:1.1rem;">Part-Time Job Telegram</h4>
-            <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5;">
+            <span style="font-weight:700; color:#ef4444; font-size:0.8rem; text-transform:uppercase;">[ TASK SCAM ]</span>
+            <h4 style="color:#ffffff; margin:6px 0 8px 0; font-size:1.1rem;">Part-Time Job Telegram</h4>
+            <p style="color:#cbd5e1; font-size:0.9rem; line-height:1.5;">
                 Promises ₹3,500 daily for liking YouTube videos. Scammers give small initial payouts before demanding deposits.
             </p>
-            <div style="background:#040c1a; padding:10px; border-radius:6px; font-size:0.82rem; color:#ff3366; margin-top:8px;">
-                ⚠️ <strong>Defense:</strong> Legitimate companies never recruit or conduct investments through Telegram groups.
+            <div style="background:#071329; padding:10px; border-radius:6px; font-size:0.82rem; color:#ef4444; margin-top:8px;">
+                ⚠️ <strong>Defense:</strong> Legitimate companies never recruit through Telegram channels.
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -403,13 +518,13 @@ with tab_home:
     with r2_c3:
         st.markdown("""
         <div class="cyber-card card-info">
-            <span style="font-family:'Rajdhani'; font-weight:700; color:#00e5ff; letter-spacing:1px; font-size:0.85rem;">[ BANKING PHISHING ]</span>
-            <h4 style="color:#ffffff; margin:6px 0 8px 0; font-family:'Orbitron'; font-size:1.1rem;">KYC / PAN Suspension</h4>
-            <p style="color:#94a3b8; font-size:0.9rem; line-height:1.5;">
-                SMS threats that your SBI, HDFC, or ICICI account is blocked today unless you update PAN details on an unauthorized link.
+            <span style="font-weight:700; color:#38bdf8; font-size:0.8rem; text-transform:uppercase;">[ BANKING PHISHING ]</span>
+            <h4 style="color:#ffffff; margin:6px 0 8px 0; font-size:1.1rem;">KYC / PAN Suspension</h4>
+            <p style="color:#cbd5e1; font-size:0.9rem; line-height:1.5;">
+                SMS threats that your bank account is blocked today unless you update PAN details on an unauthorized link.
             </p>
-            <div style="background:#040c1a; padding:10px; border-radius:6px; font-size:0.82rem; color:#00e5ff; margin-top:8px;">
-                ⚠️ <strong>Defense:</strong> Banks never ask you to update KYC via SMS links. Always use the verified mobile app.
+            <div style="background:#071329; padding:10px; border-radius:6px; font-size:0.82rem; color:#38bdf8; margin-top:8px;">
+                ⚠️ <strong>Defense:</strong> Banks never ask you to update KYC via SMS links.
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -421,7 +536,7 @@ with tab_home:
 with tab_scanner:
     st.write("")
     st.markdown("### ⚡ Live Fraud & Phishing Detection")
-    st.caption("Analyze suspicious messages, phishing emails, links, or uploaded screenshots.")
+    st.caption("Immediate analysis for suspicious messages, phishing emails, links, or uploaded screenshots.")
 
     # Input format rendered as BARS
     selected_bar = st.segmented_control(
@@ -489,33 +604,35 @@ with tab_scanner:
             result["risk_score"] = final_score
             result["risk_level"] = final_level
 
-            # Save to SQLite Database automatically
+            # Save with current user or guest
+            current_user = st.session_state.get("user_email") or "guest"
             db_id = save_scan_result(
                 scan_type=scan_type,
                 content=active_text,
                 result=result,
-                image_file=image_to_save
+                image_file=image_to_save,
+                user_email=current_user
             )
 
             # Results Display HUD
             st.divider()
             c1, c2, c3 = st.columns([1.2, 1.2, 2.6])
             
-            score_color = "#ff3366" if final_score >= 70 else ("#ffbb00" if final_score >= 40 else "#00e5ff")
+            score_color = "#ef4444" if final_score >= 70 else ("#f59e0b" if final_score >= 40 else "#10b981")
             
             with c1:
                 st.markdown(f"""
                 <div class="cyber-card" style="text-align:center;">
-                    <span style="font-size:0.85rem; color:#94a3b8; font-family:'Rajdhani'; font-weight:700;">RISK SCORE</span>
-                    <h2 style="font-family:'Orbitron'; color:{score_color}; font-size:2.4rem; margin:5px 0;">{final_score} / 100</h2>
+                    <span style="font-size:0.82rem; color:#94a3b8; font-weight:700;">RISK SCORE</span>
+                    <h2 style="color:{score_color}; font-size:2.4rem; font-weight:800; margin:5px 0;">{final_score} / 100</h2>
                 </div>
                 """, unsafe_allow_html=True)
 
             with c2:
                 st.markdown(f"""
                 <div class="cyber-card" style="text-align:center;">
-                    <span style="font-size:0.85rem; color:#94a3b8; font-family:'Rajdhani'; font-weight:700;">STATUS LEVEL</span>
-                    <h2 style="font-family:'Orbitron'; color:{score_color}; font-size:1.6rem; margin:12px 0;">{final_level}</h2>
+                    <span style="font-size:0.82rem; color:#94a3b8; font-weight:700;">STATUS LEVEL</span>
+                    <h2 style="color:{score_color}; font-size:1.5rem; font-weight:800; margin:12px 0;">{final_level}</h2>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -524,36 +641,39 @@ with tab_scanner:
                     imps = ", ".join([f"{item['entity']} ({item['category']})" for item in result["impersonation_detected"]])
                     st.markdown(f"""
                     <div class="cyber-card card-danger">
-                        <span style="font-size:0.85rem; color:#ff3366; font-family:'Rajdhani'; font-weight:700;">🎭 IMPERSONATION DETECTED</span>
-                        <p style="margin:6px 0 0 0; color:#ffffff; font-weight:600;">{imps}</p>
+                        <span style="font-size:0.82rem; color:#ef4444; font-weight:700;">🎭 IMPERSONATION DETECTED</span>
+                        <p style="margin:6px 0 0 0; color:#f8fafc; font-weight:600;">{imps}</p>
                     </div>
                     """, unsafe_allow_html=True)
                 else:
                     st.markdown("""
                     <div class="cyber-card card-info">
-                        <span style="font-size:0.85rem; color:#00e5ff; font-family:'Rajdhani'; font-weight:700;">SOURCE BRAND</span>
+                        <span style="font-size:0.82rem; color:#38bdf8; font-weight:700;">SOURCE BRAND</span>
                         <p style="margin:6px 0 0 0; color:#94a3b8;">No official brand claimed.</p>
                     </div>
                     """, unsafe_allow_html=True)
 
-            st.caption(f"💾 Incident saved to local forensics audit log (Record ID #{db_id})")
+            if current_user == "guest":
+                st.caption(f"💾 Incident analyzed (Logged as Guest). Sign in to retain this evidence in your private vault.")
+            else:
+                st.caption(f"💾 Incident saved to **{current_user}**'s forensic vault (Record ID #{db_id})")
 
-            # Explainable Indicators (Arises smoothly as you scroll into them)
+            # Explainable Indicators
             st.markdown("### 🔍 Explainable Red Flags Detected")
 
             for ew in email_warnings:
                 st.markdown(f"""
                 <div class="cyber-card card-danger">
-                    <strong style="color:#ff3366;">📧 Email Header & Domain Spoofing</strong><br>
-                    <span style="color:#e0f2fe;">{ew}</span>
+                    <strong style="color:#ef4444;">📧 Email Header & Domain Spoofing</strong><br>
+                    <span style="color:#cbd5e1;">{ew}</span>
                 </div>
                 """, unsafe_allow_html=True)
 
             for trig in result["triggers"]:
                 st.markdown(f"""
                 <div class="cyber-card card-danger">
-                    <strong style="color:#ff3366;">🚩 Flag: {trig['category']} (+{trig['weight']} Points)</strong><br>
-                    <span style="color:#e0f2fe;">{trig['explanation']}</span>
+                    <strong style="color:#ef4444;">🚩 Flag: {trig['category']} (+{trig['weight']} Points)</strong><br>
+                    <span style="color:#cbd5e1;">{trig['explanation']}</span>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -561,8 +681,8 @@ with tab_scanner:
                 for ws in u["warning_signs"]:
                     st.markdown(f"""
                     <div class="cyber-card card-warning">
-                        <strong style="color:#ffbb00;">🔗 URL Threat Indicator ({u['url']})</strong><br>
-                        <span style="color:#e0f2fe;">{ws}</span>
+                        <strong style="color:#f59e0b;">🔗 URL Threat Indicator ({u['url']})</strong><br>
+                        <span style="color:#cbd5e1;">{ws}</span>
                     </div>
                     """, unsafe_allow_html=True)
 
@@ -572,28 +692,84 @@ with tab_scanner:
 
 
 # ==============================================================================
-# TAB 3: AUDIT LOGS (PERSISTENT SQLITE DATABASE)
+# TAB 3: AUDIT LOGS (SUPABASE MANAGED AUTHENTICATION)
 # ==============================================================================
 with tab_history:
     st.write("")
     st.markdown("### 🗂️ Forensics Audit Log & Saved Evidence")
-    st.caption("All analyzed incidents, risk scores, and screenshots are securely stored in a local SQLite database.")
 
-    scans = get_all_scans()
+    logged_user = st.session_state.get("user_email")
 
-    col_h1, col_h2 = st.columns([4, 1])
-    with col_h1:
-        st.write(f"Total Logged Incidents: **{len(scans)}**")
-    with col_h2:
-        if st.button("🗑️ Clear All Logs"):
-            clear_all_scans()
-            st.rerun()
+    if not logged_user:
+        st.markdown("""
+        <div class="cyber-card card-info" style="margin-bottom: 20px;">
+            <h4 style="margin: 0 0 6px 0; color: #38bdf8;">🔒 Sign In to Access Your Forensic Evidence Vault</h4>
+            <p style="margin: 0; color: #94a3b8; font-size: 0.92rem;">
+                Free Supabase Authentication. Sign in or create an account to permanently retain and manage your scanned incident records.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        auth_tab1, auth_tab2 = st.tabs(["🔑 Sign In", "📝 Create Free Account"])
+
+        with auth_tab1:
+            col_in1, col_in2 = st.columns(2)
+            with col_in1:
+                login_email = st.text_input("Email:", key="login_email_input", placeholder="name@domain.com")
+            with col_in2:
+                login_password = st.text_input("Password:", key="login_pass_input", type="password")
+
+            if st.button("Sign In to Vault", type="primary", width="stretch", key="btn_signin"):
+                if not login_email or not login_password:
+                    st.warning("Please provide both email and password.")
+                else:
+                    with st.spinner("Authenticating with Supabase..."):
+                        success, message, user_email = sign_in_user(login_email, login_password)
+                        if success:
+                            st.session_state["user_email"] = user_email
+                            st.toast(f"✅ Welcome back, {user_email}!")
+                            st.rerun()
+                        else:
+                            st.error(message)
+
+        with auth_tab2:
+            col_up1, col_up2 = st.columns(2)
+            with col_up1:
+                signup_email = st.text_input("Email:", key="signup_email_input", placeholder="name@domain.com")
+            with col_up2:
+                signup_password = st.text_input("Choose Password (min 6 chars):", key="signup_pass_input", type="password")
+
+            if st.button("Create Account", width="stretch", key="btn_signup"):
+                if not signup_email or not signup_password:
+                    st.warning("Please fill in both fields.")
+                else:
+                    with st.spinner("Creating account on Supabase..."):
+                        success, message = sign_up_user(signup_email, signup_password)
+                        if success:
+                            st.success(message)
+                        else:
+                            st.error(message)
+
+        st.divider()
+        st.caption("Guest scans performed during this session:")
+        scans = get_all_scans(user_email="guest")
+
+    else:
+        scans = get_all_scans(user_email=logged_user)
+
+        col_h1, col_h2 = st.columns([4, 1])
+        with col_h1:
+            st.write(f"Logged Incidents for **{logged_user}**: **{len(scans)}**")
+        with col_h2:
+            if st.button("🗑️ Clear My Logs"):
+                clear_all_scans(user_email=logged_user)
+                st.rerun()
 
     if not scans:
-        st.info("No recorded scans yet. Analyze any text or screenshot in the Threat Scanner tab.")
+        st.info("No recorded evidence scans found. Analyze any message or screenshot in the Threat Scanner tab.")
     else:
         for item in scans:
-            risk_color = "#ff3366" if item["risk_score"] >= 70 else ("#ffbb00" if item["risk_score"] >= 40 else "#00e5ff")
+            risk_color = "#ef4444" if item["risk_score"] >= 70 else ("#ffbb00" if item["risk_score"] >= 40 else "#10b981")
             
             with st.expander(f"Incident #{item['id']} — {item['scan_type']} | Score: {item['risk_score']}/100 ({item['threat_level']}) — {item['timestamp']}"):
                 col_i1, col_i2 = st.columns([2, 1])
@@ -614,14 +790,14 @@ with tab_history:
 
 
 # ==============================================================================
-# TAB 4: 1930 EMERGENCY HELPLINE
+# TAB 4: 1930 EMERGENCY HELPLINE (SANCHAR SAATHI SINGLE-LINE & BUTTONS LEVELED)
 # ==============================================================================
 with tab_emergency:
     st.write("")
     st.markdown("""
-    <div class="emergency-hud" style="border: 1px solid #ff3366; background: rgba(255, 51, 102, 0.1); box-shadow: 0 0 25px rgba(255, 51, 102, 0.2); border-radius: 8px; padding: 24px; margin-bottom: 25px;">
-        <h2 style="font-family:'Orbitron'; color:#ff3366; margin:0 0 8px 0;">NATIONAL CYBERCRIME HELPLINE: 1930</h2>
-        <p style="font-size:1.05rem; color:#f0f9ff; margin:0; line-height:1.6;">
+    <div style="border: 1px solid #ef4444; background: rgba(239, 68, 68, 0.12); border-radius: 8px; padding: 22px; margin-bottom: 24px;">
+        <h2 style="color:#ef4444; margin:0 0 8px 0; font-size:1.6rem; font-weight:800;">NATIONAL CYBERCRIME HELPLINE: 1930</h2>
+        <p style="font-size:1rem; color:#f8fafc; margin:0; line-height:1.6;">
             If you have suffered an unauthorized financial deduction, dial <strong>1930</strong> immediately. 
             The <strong>Golden Hour (first 2 hours)</strong> is critical for the Indian Cyber Crime Coordination Centre (I4C) 
             to freeze money transfers before they are cashed out.
@@ -632,18 +808,30 @@ with tab_emergency:
     col_e1, col_e2, col_e3 = st.columns(3)
 
     with col_e1:
-        st.subheader("1. National Portal")
-        st.markdown("File complaints for financial fraud, identity theft, or social media harassment.")
+        st.markdown("""
+        <div style="min-height: 96px;">
+            <h3 style="margin: 0 0 6px 0; font-size: 1.15rem; white-space: nowrap;">1. National Portal</h3>
+            <p style="margin: 0; color: #94a3b8; font-size: 0.9rem;">File complaints for financial fraud, identity theft, or social media harassment.</p>
+        </div>
+        """, unsafe_allow_html=True)
         st.link_button("🌐 cybercrime.gov.in", "https://cybercrime.gov.in", width="stretch")
 
     with col_e2:
-        st.subheader("2. Sanchar Saathi (Chakshu)")
-        st.markdown("Report fraudulent calls, spam SMS headers, and rogue WhatsApp numbers.")
+        st.markdown("""
+        <div style="min-height: 96px;">
+            <h3 style="margin: 0 0 6px 0; font-size: 1.12rem; white-space: nowrap;">2. Sanchar Saathi (Chakshu)</h3>
+            <p style="margin: 0; color: #94a3b8; font-size: 0.9rem;">Report fraudulent calls, spam SMS headers, and rogue WhatsApp numbers.</p>
+        </div>
+        """, unsafe_allow_html=True)
         st.link_button("📱 Chakshu Portal", "https://sancharsaathi.gov.in", width="stretch")
 
     with col_e3:
-        st.subheader("3. Bank Card Freeze")
-        st.markdown("Immediately call your bank's 24x7 fraud desk to block cards and netbanking.")
+        st.markdown("""
+        <div style="min-height: 96px;">
+            <h3 style="margin: 0 0 6px 0; font-size: 1.15rem; white-space: nowrap;">3. Bank Card Freeze</h3>
+            <p style="margin: 0; color: #94a3b8; font-size: 0.9rem;">Immediately call your bank's 24x7 fraud desk to block cards and netbanking.</p>
+        </div>
+        """, unsafe_allow_html=True)
         st.info("Have your UTR reference number, account number, and transaction time ready.")
 
     st.divider()

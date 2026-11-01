@@ -16,12 +16,13 @@ def get_connection():
     return conn
 
 def init_db():
-    """Initializes the database schema."""
+    """Initializes the database schema with user support."""
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS scan_logs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_email TEXT DEFAULT 'guest',
                 scan_type TEXT NOT NULL,
                 content TEXT NOT NULL,
                 risk_score INTEGER NOT NULL,
@@ -32,9 +33,14 @@ def init_db():
                 timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        # Check if user_email column exists (migration helper)
+        cursor.execute("PRAGMA table_info(scan_logs)")
+        cols = [row["name"] for row in cursor.fetchall()]
+        if "user_email" not in cols:
+            cursor.execute("ALTER TABLE scan_logs ADD COLUMN user_email TEXT DEFAULT 'guest'")
         conn.commit()
 
-def save_scan_result(scan_type: str, content: str, result: dict, image_file=None) -> int:
+def save_scan_result(scan_type: str, content: str, result: dict, image_file=None, user_email: str = "guest") -> int:
     """Saves a scan record and uploaded screenshot evidence to the database."""
     init_db()
 
@@ -58,10 +64,11 @@ def save_scan_result(scan_type: str, content: str, result: dict, image_file=None
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO scan_logs (
-                scan_type, content, risk_score, threat_level, 
+                user_email, scan_type, content, risk_score, threat_level, 
                 impersonation, triggers_json, image_filename
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (
+            user_email.strip().lower() if user_email else "guest",
             scan_type,
             content,
             result.get("risk_score", 0),
@@ -73,25 +80,27 @@ def save_scan_result(scan_type: str, content: str, result: dict, image_file=None
         conn.commit()
         return cursor.lastrowid
 
-def get_all_scans():
-    """Fetches all past scans sorted by latest first."""
+def get_all_scans(user_email: str = None):
+    """Fetches scans. If user_email is given, fetches records for that user."""
     init_db()
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM scan_logs ORDER BY timestamp DESC")
+        if user_email:
+            cursor.execute(
+                "SELECT * FROM scan_logs WHERE user_email = ? ORDER BY timestamp DESC", 
+                (user_email.strip().lower(),)
+            )
+        else:
+            cursor.execute("SELECT * FROM scan_logs ORDER BY timestamp DESC")
         return [dict(row) for row in cursor.fetchall()]
 
-def clear_all_scans():
-    """Clears history and cleans evidence images."""
+def clear_all_scans(user_email: str = None):
+    """Clears history for a specific user or completely."""
     init_db()
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM scan_logs")
+        if user_email:
+            cursor.execute("DELETE FROM scan_logs WHERE user_email = ?", (user_email.strip().lower(),))
+        else:
+            cursor.execute("DELETE FROM scan_logs")
         conn.commit()
-    # Clean uploaded images
-    if os.path.exists(UPLOAD_DIR):
-        for f in os.listdir(UPLOAD_DIR):
-            try:
-                os.remove(os.path.join(UPLOAD_DIR, f))
-            except OSError:
-                pass
