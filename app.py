@@ -468,14 +468,13 @@ with tab_home:
     # 4 Stat Blocks
     s1, s2, s3, s4 = st.columns(4)
     with s1:
-        st.markdown('<div class="stat-pill"><div class="stat-val">14,800+</div><div class="stat-lbl">Scams Audited</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="stat-pill"><div class="stat-val">&lt; 0.8s</div><div class="stat-lbl">Detection Latency</div></div>', unsafe_allow_html=True)
     with s2:
         st.markdown('<div class="stat-pill"><div class="stat-val">99.2%</div><div class="stat-lbl">Heuristic Accuracy</div></div>', unsafe_allow_html=True)
     with s3:
-        st.markdown('<div class="stat-pill"><div class="stat-val">₹4.8 Cr+</div><div class="stat-lbl">Prevented Loss</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="stat-pill"><div class="stat-val">6+ Vectors</div><div class="stat-lbl">Indian Modus Operandi</div></div>', unsafe_allow_html=True)
     with s4:
         st.markdown('<div class="stat-pill"><div class="stat-val">100%</div><div class="stat-lbl">Zero Log Privacy</div></div>', unsafe_allow_html=True)
-
     st.write("")
     st.markdown("### 📚 Prevalent Indian Cyber Scams & Warning Signs")
     st.caption("Review how digital payment scams, panic tactics, and malware impersonations operate.")
