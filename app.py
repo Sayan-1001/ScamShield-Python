@@ -85,28 +85,62 @@ st.markdown("""
         margin-left: 8px;
     }
 
-    /* 4. Live Threat Ticker Marquee */
+    /* 4. Live Threat Ticker with Static Pinned Badge & Infinite Marquee */
     .ticker-bar {
         background: #0c1a36;
         border: 1px solid #1a3461;
-        border-radius: 6px;
-        padding: 7px 16px;
-        font-size: 0.84rem;
-        color: #94a3b8;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 0.85rem;
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-bottom: 20px;
+        gap: 16px;
+        margin-bottom: 22px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    }
+    /* Pinned Static Badge (Never moves) */
+    .ticker-pill {
+        background: rgba(14, 165, 233, 0.22);
+        color: #38bdf8;
+        font-weight: 800;
+        font-size: 0.76rem;
+        padding: 4px 10px;
+        border-radius: 4px;
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        flex-shrink: 0;
+        z-index: 5;
+        box-shadow: 8px 0 14px #0c1a36; /* Masks text as it passes underneath */
+    }
+    /* Scrolling Area */
+    .ticker-wrap {
+        flex: 1;
         overflow: hidden;
         white-space: nowrap;
+        position: relative;
     }
-    .ticker-pill {
-        background: rgba(14, 165, 233, 0.2);
+    .ticker-move {
+        display: inline-block;
+        white-space: nowrap;
+        padding-left: 100%;
+        animation: marqueeScroll 28s linear infinite;
+    }
+    /* Pause when user hovers */
+    .ticker-move:hover {
+        animation-play-state: paused;
+        cursor: default;
+    }
+    .ticker-item {
+        margin-right: 45px;
+        color: #cbd5e1;
+    }
+    .ticker-item strong {
         color: #38bdf8;
-        font-weight: 700;
-        font-size: 0.76rem;
-        padding: 3px 9px;
-        border-radius: 4px;
+    }
+    @keyframes marqueeScroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-100%); }
     }
 
     /* 5. Brand Header HUD Banner */
@@ -374,13 +408,19 @@ banner_html = f"""<div class="hud-banner">
 
 st.markdown(banner_html, unsafe_allow_html=True)
 
-# Live Threat Ticker Bar
+# Live Threat Ticker Bar (Floating Marquee + Pinned Badge)
 st.markdown("""
 <div class="ticker-bar">
     <span class="ticker-pill">⚠️ LIVE THREAT STREAM</span>
-    <span>• ALERT: Fake SBI YONO APK circulating via WhatsApp SMS (+91 94xxx)</span>
-    <span>• TRENDING: Electricity power cut-off SMS scam reported across Maharashtra & Delhi NCR</span>
-    <span>• CRITICAL: Digital Arrest Skype extortion active</span>
+    <div class="ticker-wrap">
+        <div class="ticker-move">
+            <span class="ticker-item">• <strong>ALERT:</strong> Fake SBI YONO APK circulating via WhatsApp SMS (+91 94xxx)</span>
+            <span class="ticker-item">• <strong>TRENDING:</strong> Electricity power cut-off SMS scam reported across Maharashtra & Delhi NCR</span>
+            <span class="ticker-item">• <strong>CRITICAL:</strong> Digital Arrest Skype video call extortion targeting senior citizens</span>
+            <span class="ticker-item">• <strong>ADVISORY:</strong> Fake PM Kisan 17th installment phishing links (.xyz domains) detected</span>
+            <span class="ticker-item">• <strong>TASK FRAUD:</strong> Telegram YouTube 'Like' job scams asking for security deposits</span>
+        </div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
