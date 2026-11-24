@@ -33,11 +33,15 @@ def extract_text_from_image(image_file, api_key: str = None) -> tuple[str, str |
         buffer.seek(0)
         optimized_img = Image.open(buffer)
 
-        prompt = "OCR: Extract all text, numbers, URLs, and headers verbatim. No commentary."
+        prompt = (
+            "OCR: Extract all text in English and Hindi (Devanagari script), "
+            "numbers, URLs, and headers verbatim in their original script. "
+            "Do not translate Hindi to English. No commentary."
+        )
 
         config = types.GenerateContentConfig(
             thinking_config=types.ThinkingConfig(thinking_level="low"),
-            max_output_tokens=400,
+            max_output_tokens=800,
             temperature=0.0
         )
 

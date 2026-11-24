@@ -18,7 +18,10 @@ class ScamShieldEngine:
         # 1. Detect Brand Impersonation
         for category, entities in IMPERSONATION_TARGETS.items():
             for entity in entities:
-                pattern = rf"\b{re.escape(entity)}\b"
+                if entity.isascii():
+                    pattern = rf"\b{re.escape(entity)}\b"
+                else:
+                    pattern = rf"(?:^|[^\w\u0900-\u097F]){re.escape(entity)}(?=$|[^\w\u0900-\u097F])"
                 if re.search(pattern, lower_text):
                     impersonation_found.append({
                         "entity": entity.upper(),
