@@ -332,32 +332,49 @@ st.markdown("""
     }
 
     /* Primary & Secondary Action Buttons in Main Canvas */
+    [data-testid="stMain"] div.stButton > button[kind="primary"],
+    [data-testid="stMain"] div.stButton > button[data-testid="stBaseButton-primary"],
     .main div.stButton > button[kind="primary"] {
-        background: var(--primary-container) !important;
-        color: var(--on-primary-container) !important;
+        background: #ff4b4b !important;
+        color: #ffffff !important;
         font-family: 'Space Grotesk', sans-serif !important;
         font-weight: 700 !important;
         letter-spacing: 0.04em !important;
         border: none !important;
         border-radius: 6px !important;
         padding: 0.65rem 1.25rem !important;
-        box-shadow: 0 0 24px rgba(6, 182, 212, 0.42) !important;
         transition: all 0.2s ease !important;
     }
-    .main div.stButton > button[kind="primary"]:hover {
-        background: var(--primary) !important;
-        box-shadow: 0 0 32px rgba(76, 215, 246, 0.6) !important;
+    [data-testid="stMain"] div.stButton > button[kind="primary"] p,
+    [data-testid="stMain"] div.stButton > button[data-testid="stBaseButton-primary"] p {
+        color: #ffffff !important;
     }
-    .main div.stButton > button:not([kind="primary"]), .stLinkButton a, .stDownloadButton button {
-        background: var(--surface-high) !important;
+    [data-testid="stMain"] div.stButton > button[kind="primary"]:hover,
+    [data-testid="stMain"] div.stButton > button[data-testid="stBaseButton-primary"]:hover,
+    .main div.stButton > button[kind="primary"]:hover {
+        background: #ff3333 !important;
+    }
+    [data-testid="stMain"] div.stButton > button:not([kind="primary"]):not([data-testid="stBaseButton-primary"]),
+    [data-testid="stMain"] div.stButton > button[data-testid="stBaseButton-secondary"],
+    .main div.stButton > button:not([kind="primary"]),
+    .stLinkButton a, .stDownloadButton button {
+        background: var(--bg) !important;
         color: var(--on-surface) !important;
-        border: 1px solid rgba(61, 73, 76, 0.45) !important;
+        border: 1px solid rgba(61, 73, 76, 0.55) !important;
         border-radius: 6px !important;
         font-family: 'JetBrains Mono', monospace !important;
         font-size: 0.78rem !important;
         font-weight: 600 !important;
     }
-    .main div.stButton > button:not([kind="primary"]):hover, .stLinkButton a:hover {
+    [data-testid="stMain"] div.stButton > button:not([kind="primary"]):not([data-testid="stBaseButton-primary"]) p,
+    [data-testid="stMain"] div.stButton > button[data-testid="stBaseButton-secondary"] p,
+    .stLinkButton a p, .stDownloadButton button p {
+        color: var(--on-surface) !important;
+    }
+    [data-testid="stMain"] div.stButton > button:not([kind="primary"]):not([data-testid="stBaseButton-primary"]):hover,
+    [data-testid="stMain"] div.stButton > button[data-testid="stBaseButton-secondary"]:hover,
+    .main div.stButton > button:not([kind="primary"]):hover,
+    .stLinkButton a:hover {
         border-color: var(--primary) !important;
         color: var(--primary) !important;
     }
