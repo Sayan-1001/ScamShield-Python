@@ -41,12 +41,12 @@ An AI-assisted, explainable cybersecurity and fraud-detection platform built for
 
 ## 🧠 Detection Architecture
 
-- **`scamshield/explainable_engine.py`** — Rule-based explainable scoring engine (`ScamShieldEngine`) combining brand impersonation detection (ASCII + Devanagari-safe boundaries), weighted fraud signatures, URL heuristics, and contextual recommendations.
-- **`scamshield/patterns.py`** — Bilingual (English + Hindi/Hinglish) taxonomy of Indian impersonation targets (banks, UPI wallets, telecoms, government agencies, e-commerce) and 10 fraud signature categories.
-- **`scamshield/url_analyzer.py`** — Extracts URLs via regex/`validators` and flags brand-jacking, subdomain spoofing (`tldextract`), unencrypted HTTP, raw IPs, URL shorteners, `.apk`/`.exe` links, and high-risk TLDs.
-- **`scamshield/email_analyzer.py`** — Detects free-provider impersonation (`@gmail.com`, etc.) and domain spoofing against official Indian domains (`sbi.co.in`, `rbi.org.in`, `incometax.gov.in`, `epfindia.gov.in`, `indiapost.gov.in`, etc.) plus English/Hindi subject urgency bait.
-- **`scamshield/ocr_engine.py`** — Image optimization (Pillow downscaling) + **Gemini 3.5 Flash-Lite** (`google-genai`) OCR extracting English and Hindi text verbatim.
-- **`scamshield/db.py` & `scamshield/auth.py`** — SQLite incident storage (`UPLOAD_DIR` for screenshots) and Supabase user authentication.
+- **Explainable Engine** — Rule-based explainable scoring engine (`ScamShieldEngine`) combining brand impersonation detection (ASCII + Devanagari-safe boundaries),     weighted fraud signatures, URL heuristics, and contextual recommendations.
+- **Patterns** — Bilingual (English + Hindi/Hinglish) taxonomy of Indian impersonation targets (banks, UPI wallets, telecoms, government agencies, e-commerce) and     10 fraud signature categories.
+- **Url Analyzer** — Extracts URLs via regex/`validators` and flags brand-jacking, subdomain spoofing (`tldextract`), unencrypted HTTP, raw IPs, URL shorteners,       `.apk`/`.exe` links, and high-risk TLDs.
+- **Email Analyzer** — Detects free-provider impersonation (`@gmail.com`, etc.) and domain spoofing against official Indian domains (`sbi.co.in`, `rbi.org.in`,       `incometax.gov.in`, `epfindia.gov.in`, `indiapost.gov.in`, etc.) plus English/Hindi subject urgency bait.
+- **OCR Engine** — Image optimization (Pillow downscaling) + **Gemini 3.5 Flash-Lite** (`google-genai`) OCR extracting English and Hindi text verbatim.
+- **Database & Authentication** — SQLite incident storage (`UPLOAD_DIR` for screenshots) and Supabase user authentication.
 
 ---
 
@@ -59,4 +59,3 @@ An AI-assisted, explainable cybersecurity and fraud-detection platform built for
 - **Auth & Storage:** Supabase Auth + SQLite
 
 ---
-
